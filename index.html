@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<!--
+Copyright (c) 2016, Jean-Francois Pambrun
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<html>
+
+<head>
+    <title>OpenJpeg test</title>
+    <script src="libopenjpeg.js" type="text/javascript"></script>
+</head>
+
+<script>
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)", "i"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+
+    Module['_main'] = function() {
+        console.log('Version: ' +  Module.ccall('jp2_version', 'string'));
+
+        xhr = new XMLHttpRequest();
+        var img = getParameterByName('img');
+        if(img === null)
+            img = 'cameraman.lossless.jp2';
+        xhr.open("GET", "/" + img, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function (oEvent) {
+            var arrayBuffer = xhr.response;
+            streamSize = xhr.response.byteLength;
+            streamData = new Uint8Array(xhr.response);
+            var streamDataPtr = Module._malloc(streamSize);
+            writeArrayToMemory(streamData, streamDataPtr);
+
+            // create param outpout
+            var imagePtr=Module._malloc(4);
+            var imageSizePtr=Module._malloc(4);
+            var imageSizeXPtr=Module._malloc(4);
+            var imageSizeYPtr=Module._malloc(4);
+
+            var t0 = performance.now();
+            var ret = Module.ccall('jp2_decode','number', ['number', 'number', 'number', 'number', 'number', 'number'], 
+                                                          [streamDataPtr, streamSize, imagePtr, imageSizePtr, imageSizeXPtr, imageSizeYPtr]);
+            var t1 = performance.now();
+
+
+
+            var image = getValue(imagePtr, '*');
+            var imageSize =  getValue(imageSizePtr,'i32')
+            var size_x =  getValue(imageSizeXPtr,'i32')
+            var size_y =  getValue(imageSizeYPtr,'i32')
+
+            console.log("size = " + size_x + ", " + size_y + " => " + imageSize)
+
+            // free param outpout
+            Module._free(streamDataPtr)
+            Module._free(imagePtr);
+            Module._free(imageSizePtr);
+            Module._free(imageSizeXPtr);
+            Module._free(imageSizeYPtr);
+
+            var ctx = document.getElementById('canvas').getContext('2d')
+            var imageData = ctx.createImageData(size_x, size_y);
+
+            for (i = 0; i < imageSize; i=i+4) {
+                var val = getValue(image + i, 'i32');
+                imageData.data[i+0] = val;
+                imageData.data[i+1] = val;
+                imageData.data[i+2] = val;
+                imageData.data[i+3] = 255;//getValue(image + i, 'i8');
+            }
+            ctx.putImageData(imageData,0, 0);
+            Module._free(image);
+            console.log("Call to jp2_decode took " + (t1 - t0) + " milliseconds.")
+
+        };
+        xhr.send();
+
+    };
+
+    //Module._main(); //required for debugging
+</script>
+
+<body>
+    <a href="/?img=cameraman.lossless.jp2">cameraman.lossless.jp2</a>
+    <a href="/?img=lossyhdr.dcm.jp2">lossyhdr.dcm.jp2</a>
+    <a href="/?img=peppers.10.jp2">peppers.10.jp2</a>
+    <a href="/?img=saturn.jpc">saturn.jpc</a>
+    <a href="/?img=860AE501.dcm.jp2">860AE501</a>
+    <p>
+    <canvas id="canvas" width="2000" height="2000"></canvas>
+</body>
+
+</html
