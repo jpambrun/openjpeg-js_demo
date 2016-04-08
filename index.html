@@ -50,7 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         var img = getParameterByName('img');
         if(img === null)
             img = 'cameraman.lossless.jp2';
-        xhr.open("GET", "/" + img, true);
+        xhr.open("GET", img, true);
         xhr.responseType = 'arraybuffer';
         xhr.onload = function (oEvent) {
             var arrayBuffer = xhr.response;
@@ -109,11 +109,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </script>
 
 <body>
-    <a href="/?img=cameraman.lossless.jp2">cameraman.lossless.jp2</a>
-    <a href="/?img=lossyhdr.dcm.jp2">lossyhdr.dcm.jp2</a>
-    <a href="/?img=peppers.10.jp2">peppers.10.jp2</a>
-    <a href="/?img=saturn.jpc">saturn.jpc</a>
-    <a href="/?img=860AE501.dcm.jp2">860AE501</a>
+    <a href="?img=cameraman.lossless.jp2">cameraman.lossless.jp2</a>
+    <a href="?img=lossyhdr.dcm.jp2">lossyhdr.dcm.jp2</a>
+    <a href="?img=peppers.10.jp2">peppers.10.jp2</a>
+    <a href="?img=saturn.jpc">saturn.jpc</a>
+    <a href="?img=860AE501.dcm.jp2">860AE501</a>
     <p>
     <canvas id="canvas" width="2000" height="2000"></canvas>
 </body>
