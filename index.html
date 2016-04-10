@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <head>
     <title>OpenJpeg test</title>
-    <script src="libopenjpeg.js" type="text/javascript"></script>
 </head>
 
 <script>
@@ -43,6 +42,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     }
 
 
+    var Module = {
+    TOTAL_MEMORY: 268435456,
+    errorhandler: null,         // arguments: err, url, line. This function must return 'true' if the error is handled, otherwise 'false'
+    };
+    (function() {
+      var support = (typeof Wasm === 'object');
+      if (!support) {
+        console.log('Wasm not supported!');
+      }else{
+         var xhr = new XMLHttpRequest();
+          xhr.open('GET', 'libopenjpeg.wasm', true);
+          xhr.responseType = 'arraybuffer';
+          xhr.onload = function() {
+            Module.wasmBinary = new Uint8Array(xhr.response);
+            console.log('wasm downloaded')
+            var exports = Wasm.instantiateModule(Module.wasmBinary).exports;
+            console.log('wasm loaded')
+
+          };
+          xhr.send(null);
+
+
+      }
+    })();
+
+
+
+/*
     Module['_main'] = function() {
         console.log('Version: ' +  Module.ccall('jp2_version', 'string'));
 
@@ -104,7 +131,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         xhr.send();
 
     };
-
+*/
     //Module._main(); //required for debugging
 </script>
 
