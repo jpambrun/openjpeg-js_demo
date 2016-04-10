@@ -42,6 +42,57 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
+    function opj_decode(data) {
+
+        var dataPtr = Module._malloc(data.length);
+        writeArrayToMemory(data, dataPtr);
+
+        // create param outpout
+        var imagePtrPtr=Module._malloc(4);
+        var imageSizePtr=Module._malloc(4);
+        var imageSizeXPtr=Module._malloc(4);
+        var imageSizeYPtr=Module._malloc(4);
+
+        var t0 = performance.now();
+        var ret = Module.ccall('jp2_decode','number', ['number', 'number', 'number', 'number', 'number', 'number'],
+                                                      [dataPtr, data.length, imagePtrPtr, imageSizePtr, imageSizeXPtr, imageSizeYPtr]);
+        // add num vomp..etc
+        if(ret !== 0){
+            console.log('[opj_decode] decoding failed!')
+            Module._free(dataPtr);
+            Module._free(getValue(imagePtrPtr, '*'));
+            Module._free(imageSizeXPtr);
+            Module._free(imageSizeYPtr);
+            Module._free(imageSizePtr);
+            return undefined;
+        }
+
+        var imagePtr = getValue(imagePtrPtr, '*')
+
+        var image = {
+            length : getValue(imageSizePtr,'i32'),
+            sx :  getValue(imageSizeXPtr,'i32'),
+            sy :  getValue(imageSizeYPtr,'i32'),
+            nbChannels : 1, // hard coded for now
+            perf_timetodecode : undefined,
+            pixelData : undefined
+        };
+
+        image.pixelData = new Int32Array(image.sx*image.sy*image.nbChannels);
+        for (i = 0; i < image.pixelData.length; i++) {
+            image.pixelData[i] = getValue(imagePtr + i*4, 'i32'); // because sizeof(i32) = 4
+        }
+        var t1 = performance.now();
+        image.perf_timetodecode = t1-t0;
+        // free
+        Module._free(dataPtr)
+        Module._free(imagePtrPtr);
+        Module._free(imagePtr);
+        Module._free(imageSizePtr);
+        Module._free(imageSizeXPtr);
+        Module._free(imageSizeYPtr);
+        return image;
+    }
 
     Module['_main'] = function() {
         console.log('Version: ' +  Module.ccall('jp2_version', 'string'));
@@ -53,53 +104,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         xhr.open("GET", img, true);
         xhr.responseType = 'arraybuffer';
         xhr.onload = function (oEvent) {
-            var arrayBuffer = xhr.response;
-            streamSize = xhr.response.byteLength;
-            streamData = new Uint8Array(xhr.response);
-            var streamDataPtr = Module._malloc(streamSize);
-            writeArrayToMemory(streamData, streamDataPtr);
-
-            // create param outpout
-            var imagePtr=Module._malloc(4);
-            var imageSizePtr=Module._malloc(4);
-            var imageSizeXPtr=Module._malloc(4);
-            var imageSizeYPtr=Module._malloc(4);
-
-            var t0 = performance.now();
-            var ret = Module.ccall('jp2_decode','number', ['number', 'number', 'number', 'number', 'number', 'number'], 
-                                                          [streamDataPtr, streamSize, imagePtr, imageSizePtr, imageSizeXPtr, imageSizeYPtr]);
-            var t1 = performance.now();
-
-
-
-            var image = getValue(imagePtr, '*');
-            var imageSize =  getValue(imageSizePtr,'i32')
-            var size_x =  getValue(imageSizeXPtr,'i32')
-            var size_y =  getValue(imageSizeYPtr,'i32')
-
-            console.log("size = " + size_x + ", " + size_y + " => " + imageSize)
-
-            // free param outpout
-            Module._free(streamDataPtr)
-            Module._free(imagePtr);
-            Module._free(imageSizePtr);
-            Module._free(imageSizeXPtr);
-            Module._free(imageSizeYPtr);
+            data = new Uint8Array(xhr.response);
+            image =  opj_decode(data)
 
             var ctx = document.getElementById('canvas').getContext('2d')
-            var imageData = ctx.createImageData(size_x, size_y);
+            var ctxImageData = ctx.createImageData(image.sx, image.sy);
 
-            for (i = 0; i < imageSize; i=i+4) {
-                var val = getValue(image + i, 'i32');
-                imageData.data[i+0] = val;
-                imageData.data[i+1] = val;
-                imageData.data[i+2] = val;
-                imageData.data[i+3] = 255;//getValue(image + i, 'i8');
+            for (i = 0; i < (image.sx * image.sy) ; i++) {
+                var val = image.pixelData[i];
+                ctxImageData.data[i*4+0] = val;
+                ctxImageData.data[i*4+1] = val;
+                ctxImageData.data[i*4+2] = val;
+                ctxImageData.data[i*4+3] = 255;
             }
-            ctx.putImageData(imageData,0, 0);
-            Module._free(image);
-            console.log("Call to jp2_decode took " + (t1 - t0) + " milliseconds.")
-
+            ctx.putImageData(ctxImageData,0, 0);
+            console.log("Call to jp2_decode took " + image.perf_timetodecode + " milliseconds.")
         };
         xhr.send();
 
