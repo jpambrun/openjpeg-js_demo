@@ -81,7 +81,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
             var cumAbsDiff = 0;
             for (i = 0; i < (image.sx * image.sy) ; i++) {
-                cumAbsDiff += Math.abs( image.pixelData[i] - image_jpx.pixelData[i*image_jpx.nbChannels]);
+                cumAbsDiff += Math.abs( image.pixelData[i] - image_jpx.pixelData[i]);
             }
             console.log('cumAbsDiff/numel = ' + cumAbsDiff / (image.sx * image.sy))
 

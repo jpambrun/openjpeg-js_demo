@@ -1,26 +1,36 @@
 # OpenJpeg-js test
 
 ## Bechmark vs. jpx
+When compiles with
+```
+emcc bin/libopenjpeg-js.bc -o dist/libopenjpeg.js \
+     --post-js bin/JSOpenJPEGDecoder_post-js.js \
+     --memory-init-file 0 \
+     -s TOTAL_MEMORY=500000000 \
+     -s NO_FILESYSTEM=1 \
+     -O3
+```
 
-### Chrome 49.0.2623.112
+### Chrome 49.0.2623.112 - Linux VM
 
 | file | jpx time (ms) | opj time (ms) | diff per pixel |
 |----------|-------------:|------:|------:|
-|cameraman.lossless.jp2 | 110.53 | 301.42 | 0.00|
-|lossyhdr.dcm.jp2 | 254.20 | 403.42 | 206.01|
-|peppers.10.jp2 | 186.56 | 403.35 | 0.49|
-|saturn.jpc | 499.50 | 511.34 | 0.00|
-|860AE501.dcm.jp2 | 1831.20 | 1349.00 | 0.00|
+|cameraman.lossless.jp2 | 83.87 | 275.00 | 0.00|
+|lossyhdr.dcm.jp2 | 245.88 | 409.00 | 206.01|
+|peppers.10.jp2 | 178.30 | 439.00 | 0.50|
+|saturn.jpc | 482.78 | 506.00 | 0.00|
+|860AE501.dcm.jp2 | 1849.93 | 1297.00 | 0.00|
 
-### FF DEV 47.0a2 (2016-04-07)
+### FF DEV 47.0a2 (2016-04-07) - Linux VM
 
 | file | jpx time (ms) | opj time (ms) | diff per pixel |
 |----------|-------------:|------:|------:|
-|cameraman.lossless.jp2 | 425.08 | 20.20 | 0.00|
-|lossyhdr.dcm.jp2 | 352.66 | 95.77 | 206.01|
-|peppers.10.jp2 | 605.59 | 57.25 | 0.49|
-|saturn.jpc | 952.16 | 170.68 | 0.00|
-|860AE501.dcm.jp2 | 1329.36 | 871.00 | 0.00|
+|cameraman.lossless.jp2 | 139.85 | 18.00 | 0.00|
+|lossyhdr.dcm.jp2 | 252.31 | 94.00 | 206.01|
+|peppers.10.jp2 | 283.37 | 51.00 | 0.50|
+|saturn.jpc | 464.31 | 171.00 | 0.00|
+|860AE501.dcm.jp2 | 1282.50 | 810.00 | 0.00|
+
 
 ## Notes
 
@@ -32,7 +42,7 @@ However, this may actually fix issue [#5](https://github.com/OHIF/image-JPEG2000
 More testing required..
 
 ### download size
-* libopenjpg.js + libopenjpeg.js.mem : 480 kb
+* libopenjpg.js : 480 kb
 * jpx.min.js : 17 kb
 
 libopenjpg.js is 20+ times larger and probably takes 20x time to compile by the JS interpreter.
