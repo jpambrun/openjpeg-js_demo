@@ -10,11 +10,9 @@
 |lossyhdr.dcm.jp2 | 254.20 | 403.42 | 206.01|
 |peppers.10.jp2 | 186.56 | 403.35 | 0.49|
 |saturn.jpc | 499.50 | 511.34 | 0.00|
-
-FAILS: 860AE501.dcm.jp2
+|860AE501.dcm.jp2 | 1831.20 | 1349.00 | 0.00|
 
 ### FF DEV 47.0a2 (2016-04-07)
-
 
 | file | jpx time (ms) | opj time (ms) | diff per pixel |
 |----------|-------------:|------:|------:|
@@ -22,21 +20,16 @@ FAILS: 860AE501.dcm.jp2
 |lossyhdr.dcm.jp2 | 352.66 | 95.77 | 206.01|
 |peppers.10.jp2 | 605.59 | 57.25 | 0.49|
 |saturn.jpc | 952.16 | 170.68 | 0.00|
-
-FAILS: 860AE501.dcm.jp2
+|860AE501.dcm.jp2 | 1329.36 | 871.00 | 0.00|
 
 ## Notes
 
-### Fails and diff
+### diff
 #### lossyhdr.dcm.jp2
 
 The output from jpx and opj are different.
 However, this may actually fix issue [#5](https://github.com/OHIF/image-JPEG2000/issues/5).
 More testing required..
-
-#### 860AE501.dcm.jp2
-
-860AE501 fails with OPJ, however this is maybe because OPJ is not configured to handle truncated files?
 
 ### download size
 * libopenjpg.js + libopenjpeg.js.mem : 480 kb
