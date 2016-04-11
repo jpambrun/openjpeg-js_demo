@@ -42,15 +42,25 @@ emcc bin/libopenjpeg-js.bc -o dist/libopenjpeg.js \
 |saturn.jpc | 464.31 | 171.00 | 0.00|
 |860AE501.dcm.jp2 | 1282.50 | 810.00 | 0.00|
 
-#### with "-s ASM_JS=2"
+### IE 11.162 - WIN10
 
 | file | jpx time (ms) | opj time (ms) | diff per pixel |
 |----------|-------------:|------:|------:|
-|cameraman.lossless.jp2 | 158.09 | 180.00 | 0.00|
-|lossyhdr.dcm.jp2 | 267.10 | 456.00 | 206.01|
-|peppers.10.jp2 | 263.42 | 326.00 | 0.50|
-|saturn.jpc | 533.51 | 696.00 | 0.00|
-|860AE501.dcm.jp2 | 1252.55 | 1484.00 | 0.00|
+|cameraman.lossless.jp2 | 398.76 | 175.00 | 0.00|
+|lossyhdr.dcm.jp2 | 1241.58 | 869.00 | 206.01|
+|peppers.10.jp2 | 1168.25 | 286.00 | 0.50|
+|saturn.jpc | 2072.94 | 1080.00 | 0.00|
+|860AE501.dcm.jp2 | 17152.18 | 3455.00 | 0.00|
+
+### Edge 25 - WIN10
+
+| file | jpx time (ms) | opj time (ms) | diff per pixel |
+|----------|-------------:|------:|------:|
+|cameraman.lossless.jp2 | 52.50 | 50.00 | 0.00|
+|lossyhdr.dcm.jp2 | 158.94 | 236.00 | 206.01|
+|peppers.10.jp2 | 121.42 | 196.00 | 0.50|
+|saturn.jpc | 347.09 | 362.00 | 0.00|
+|860AE501.dcm.jp2 | 1776.97 | 1293.00 | 0.00|
 
 ## Notes
 
