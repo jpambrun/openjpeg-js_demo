@@ -21,6 +21,17 @@ emcc bin/libopenjpeg-js.bc -o dist/libopenjpeg.js \
 |saturn.jpc | 482.78 | 506.00 | 0.00|
 |860AE501.dcm.jp2 | 1849.93 | 1297.00 | 0.00|
 
+#### with "-s ASM_JS=2"
+
+| file | jpx time (ms) | opj time (ms) | diff per pixel |
+|----------|-------------:|------:|------:|
+|cameraman.lossless.jp2 | 83.29 | 176.00 | 0.00|
+|lossyhdr.dcm.jp2 | 268.40 | 348.00 | 206.01|
+|peppers.10.jp2 | 168.16 | 369.00 | 0.50|
+|saturn.jpc | 479.16 | 687.00 | 0.00|
+|860AE501.dcm.jp2 | 1849.80 | 2129.00 | 0.00|
+
+
 ### FF DEV 47.0a2 (2016-04-07) - Linux VM
 
 | file | jpx time (ms) | opj time (ms) | diff per pixel |
@@ -31,6 +42,15 @@ emcc bin/libopenjpeg-js.bc -o dist/libopenjpeg.js \
 |saturn.jpc | 464.31 | 171.00 | 0.00|
 |860AE501.dcm.jp2 | 1282.50 | 810.00 | 0.00|
 
+#### with "-s ASM_JS=2"
+
+| file | jpx time (ms) | opj time (ms) | diff per pixel |
+|----------|-------------:|------:|------:|
+|cameraman.lossless.jp2 | 158.09 | 180.00 | 0.00|
+|lossyhdr.dcm.jp2 | 267.10 | 456.00 | 206.01|
+|peppers.10.jp2 | 263.42 | 326.00 | 0.50|
+|saturn.jpc | 533.51 | 696.00 | 0.00|
+|860AE501.dcm.jp2 | 1252.55 | 1484.00 | 0.00|
 
 ## Notes
 
